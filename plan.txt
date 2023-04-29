@@ -1,0 +1,73 @@
+--- Board Rendering and Game Playing ---
+
+The board is to be rendered on the screen as such:
+
+\\\\ 1 \\ 2 \\ 3 \\ 4 \\ 5 \\ 6 \\ 7 \\ 
+ \\ [ ]  [ ]  [ ]  [ ]  [ ]  [ ]  [ ] \\
+ \\                                   \\
+ \\ [ ]  [ ]  [ ]  [ ]  [ ]  [ ]  [ ] \\
+ \\                                   \\
+ \\ [ ]  [ ]  [ ]  [ ]  [ ]  [ ]  [ ] \\
+ \\                                   \\
+ \\ [ ]  [ ]  [ ]  [ ]  [ ]  [ ]  [ ] \\
+ \\                                   \\
+ \\ [ ]  [ ]  [ ]  [ ]  [ ]  [ ]  [ ] \\
+ \\                                   \\
+ \\ [ ]  [ ]  [ ]  [ ]  [ ]  [ ]  [ ] \\
+  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+When the cells are populated with a token, the " █ " character will be used. It will be colored according to the player that placed it.
+
+
+Each cell will be stored as a cell object. Each cell object will include an array of related cells, which includes all cells adjacent to and diagonal to said cell.
+If a cell is fewer than eight cells away from a wall in any given direction, the the cell in said direction is removed from the array of related cells because that cell does not need to be considered when checking if the game has been won.
+
+To check if the game is won:
+
+I. Iterate through each cell
+II. Iterate through each cell in the array of related cells
+III. Check if the cell's color is the same as the original cell
+IV. If so, continue in the same direction until a cell of a different color or a cell without a token is found.
+V. If the system iterates through four cells as such without conflict, count the game as a win in the corresponding color's favour.
+VI. If not, continue to the next cell until all cells are checked
+
+To generate the array of related cells:
+
+I. 
+
+
+
+
+--- Solving Algorithm ---
+
+The algorithm will have a few preliminary checks to see if its hand is forced
+
+I. Check if a win for the AI is possible with one move; if so, make the move
+II. Check if the opponent can win with one move; if so, block the opponent from making said move
+
+Next, the algorithm will generate a list of all possible next moves it can make.
+This effectively opens a simulation of the game being played.
+For each move the algorithm will check if 
+
+I. The opponent will be able to win on their turn after the move is made
+II. The algorithm will open a situation where it has two or more possible places it can win so that the opponent cannot possibly counter it
+
+In the first case the algorithm will rule out the choice right away; in the second, it will make the move immediately.
+
+SCORING
+
+Before anything else can happen, the scoring for each board must be determined.
+
+Positive Scores
+Opponent Impossible Move - A case where the opponent cannot make a move because of a filled column or an opponent victory on next turn - +15pts
+Blockade - Two-in-a-row - +10pts
+Threat - Three-in-a-row - +30pts
+Attack - Three-in-a-row that can turn into a win in one turn - +50pts
+Forced Win - Situation where win for AI is inevitable; overrides all other items - +125pts
+
+Negative Scores
+Impossible Move - A case where the AI cannot make a move because of a filled column or an opponent victory on next turn - -15pts
+Opponent Blockade - Two-in-a-row - -10pts
+Opponent Threat - Three-in-a-row - -30pts
+Opponent Attack - Three-in-a-row that can turn into a win in one turn - -50pts
+Opponent Forced Win - Situation where win for opponent is inevitable; overrides all other items - -125pts

@@ -1,0 +1,15 @@
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Debug/net7.0/ConnectFour
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Debug/net7.0/ConnectFour.deps.json
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Debug/net7.0/ConnectFour.runtimeconfig.json
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Debug/net7.0/ConnectFour.dll
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Debug/net7.0/ConnectFour.pdb
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ConnectFour.csproj.AssemblyReference.cache
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ConnectFour.GeneratedMSBuildEditorConfig.editorconfig
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ConnectFour.AssemblyInfoInputs.cache
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ConnectFour.AssemblyInfo.cs
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ConnectFour.csproj.CoreCompileInputs.cache
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ConnectFour.dll
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/refint/ConnectFour.dll
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ConnectFour.pdb
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ConnectFour.genruntimeconfig.cache
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/Debug/net7.0/ref/ConnectFour.dll
