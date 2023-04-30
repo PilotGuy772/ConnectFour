@@ -9,9 +9,9 @@ In this program, I am working on my best attempt at a heuristics-based solving a
 
 ### How it works
 
-My Connect Four AI is still at an early stage of development, so natuarally it is not the best it can be. Right now, the system works based on a recursive algorithm that explores a tree to a set depth and scores board states, then returns the average scores up to the root of the tree so the AI can choose based on the scores what is the best move. In any given board, the AI has up to seven choices available to it, one for each column. In its current state the AI will always act in self preservation if it finds it is under attack (about to lose if it doesn't do something about it immediately) and also assumes that the player it plays against will do the same. 
+My connect four AI works on a [minimax](https://en.wikipedia.org/wiki/Minimax) algorithm. In simple terms, the AI always acts based on what has the potential to give it the best score. Because Connect Four has so many possible board states and such a huge tree (for a tree of height n, the number of base nodes is represented by 7<sup> n</sup>), the algorithm scores board states based on a heuristic algorithm that recods blockades (two-in-a-rows), threats (three-in-a-rows), and attacks (opportunities for one side to win on the next move if something isn't done about it).
 
-I plan to implement a proper [minimax](https://en.wikipedia.org/wiki/Minimax) algorithm in the next version.
+The algorithm essentially predicts what the other player will do based on what it thinks that the player thinks will benefit it most, i.e., give the player the best score. It's not perfect, but it's pretty much the best there is in the realm of game theory.
 
 ### Installation
 
@@ -23,16 +23,17 @@ I have provided in the [releases](https://github.com/PilotGuy772/ConnectFour/rel
 |- v0.0.0 -> preliminary version; basic infrastructure only
 |- v1.0.0 -> first working version
    |- v1.1.0 -> QOL changes, added a menu at startup
+|- v2.0.0 -> algorithm now works on a minimax algorithm, bugfixes
 ```
 Goals for the future:
-* Add a proper minimax algorithm
+* <s>Add a menu for changin environment variables at startup</s>
+* <s>Add a proper minimax algorithm</s>
+* Add alpha-beta pruning
 * Optimize like crazy to allow for deeper tree searches
 * Implement multithreading
 
 Known Issues:
-* AI sometimes places two tokens in one turn
-* AI consistently ignores the possibility for a player attack with a three-in-a-row with both ends empty (a guaranteed loss)
-* AI sometimes spits out four extra tokens on the board after the player wins
-* Sometimes there's a DivideByZeroException ???
+* The AI often ignores opportunities to form a win by principlem i.e., two attacks at the same time (more of a balance issue than anything).
+* The AI sometimes does really wacky stuff. Again, more of a balance issue than anything.
 
-I made most of this in one sitting don't mind the spagetti code, it will get better I promise.
+The spagetti code situation is better now (I hope)
