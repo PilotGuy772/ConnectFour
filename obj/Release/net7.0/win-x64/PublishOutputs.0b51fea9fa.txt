@@ -1,0 +1,2 @@
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Release/net7.0/win-x64/publish/ConnectFour.pdb
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Release/net7.0/win-x64/publish/ConnectFour.exe

@@ -1,0 +1,5 @@
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Release/net7.0/publish/ConnectFour
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Release/net7.0/publish/ConnectFour.dll
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Release/net7.0/publish/ConnectFour.deps.json
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Release/net7.0/publish/ConnectFour.runtimeconfig.json
+/media/laeth/SSDLinux/Documents/programs/ConnectFour/bin/Release/net7.0/publish/ConnectFour.pdb

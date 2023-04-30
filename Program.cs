@@ -2,17 +2,145 @@
 
 class Program
 {
+
+    public static bool VERBOSE = false;
+    public static bool CLEARSCREEN = false;
+    public static bool PLAYER_FIRST = true;
+
     public static void Main(string[] args)
     {
-        Console.WriteLine("sup let's see our awesome board");
         Board master = new Board();
 
+        while(true)
+        {
+
+            Console.Clear();
+            Console.WriteLine("Welcome to Connect Four\n");
+            master.OutputBoard();
+            Console.WriteLine("\n");
+            ColorWrite("  (1)", ConsoleColor.Blue);Console.Write(" - Tree Search Depth - " + Board.MAX_SEARCH_DEPTH + "\n");
+            ColorWrite("  (2)", ConsoleColor.Blue);Console.Write(" - Player Goes First - " + PLAYER_FIRST + "\n");
+            ColorWrite("  (3)", ConsoleColor.Blue);Console.Write(" - Verbose Information - " + VERBOSE + "\n");
+            ColorWrite("  (4)", ConsoleColor.Blue);Console.Write(" - Clear Screen Each Turn - " + CLEARSCREEN + "\n");
+            ColorWrite("  (5)", ConsoleColor.Blue);Console.Write(" - PLAY\n\n");
+
+            char key = Console.ReadKey().KeyChar;
+            bool leave = false;
+            string input;
+
+            switch(key)
+            {
+                case '1':
+                    Console.Clear();
+                    Console.WriteLine("Welcome to Connect Four\n");
+                    master.OutputBoard();
+                    Console.WriteLine("\n");
+                    ColorWrite("  (1)", ConsoleColor.Red);Console.Write(" - Tree Search Depth - " + Board.MAX_SEARCH_DEPTH + "\n");
+                    ColorWrite("  (2)", ConsoleColor.Blue);Console.Write(" - Player Goes First - " + PLAYER_FIRST + "\n");
+                    ColorWrite("  (3)", ConsoleColor.Blue);Console.Write(" - Verbose Information - " + VERBOSE + "\n");
+                    ColorWrite("  (4)", ConsoleColor.Blue);Console.Write(" - Clear Screen Each Turn - " + CLEARSCREEN + "\n");
+                    ColorWrite("  (5)", ConsoleColor.Blue);Console.Write(" - PLAY\n\n");
+
+                    Console.Write("Input a new value -> ");
+                    input = Console.ReadLine() ?? "";
+                    int number;
+                    try
+                    {
+                        number = Convert.ToInt32(input);
+                    }catch{
+                        continue;
+                    }
+                    Board.MAX_SEARCH_DEPTH = number;
+                    continue;
+                case '2':
+                    Console.Clear();
+                    Console.WriteLine("Welcome to Connect Four\n");
+                    master.OutputBoard();
+                    Console.WriteLine("\n");
+                    ColorWrite("  (1)", ConsoleColor.Blue);Console.Write(" - Tree Search Depth - " + Board.MAX_SEARCH_DEPTH + "\n");
+                    ColorWrite("  (2)", ConsoleColor.Red);Console.Write(" - Player Goes First - " + PLAYER_FIRST + "\n");
+                    ColorWrite("  (3)", ConsoleColor.Blue);Console.Write(" - Verbose Information - " + VERBOSE + "\n");
+                    ColorWrite("  (4)", ConsoleColor.Blue);Console.Write(" - Clear Screen Each Turn - " + CLEARSCREEN + "\n");
+                    ColorWrite("  (5)", ConsoleColor.Blue);Console.Write(" - PLAY\n\n");
+
+                    Console.Write("Select T or F -> ");
+                    input = Console.ReadLine() ?? "";
+                    if(input.ToLower() == "t")
+                    {
+                        PLAYER_FIRST = true;
+                    }else if(input.ToLower() == "f")
+                    {
+                        PLAYER_FIRST = false;
+                    }
+
+                    continue;
+                case '3':
+                    Console.Clear();
+                    Console.WriteLine("Welcome to Connect Four\n");
+                    master.OutputBoard();
+                    Console.WriteLine("\n");
+                    ColorWrite("  (1)", ConsoleColor.Blue);Console.Write(" - Tree Search Depth - " + Board.MAX_SEARCH_DEPTH + "\n");
+                    ColorWrite("  (2)", ConsoleColor.Blue);Console.Write(" - Player Goes First - " + PLAYER_FIRST + "\n");
+                    ColorWrite("  (3)", ConsoleColor.Red);Console.Write(" - Verbose Information - " + VERBOSE + "\n");
+                    ColorWrite("  (4)", ConsoleColor.Blue);Console.Write(" - Clear Screen Each Turn - " + CLEARSCREEN + "\n");
+                    ColorWrite("  (5)", ConsoleColor.Blue);Console.Write(" - PLAY\n\n");
+
+
+                    Console.Write("Select T or F -> ");
+                    input = Console.ReadLine() ?? "";
+                    if(input.ToLower() == "t")
+                    {
+                        VERBOSE = true;
+                    }else if(input.ToLower() == "f")
+                    {
+                        VERBOSE = false;
+                    }
+                    break;
+                case '4':
+                    Console.Clear();
+                    Console.WriteLine("Welcome to Connect Four\n");
+                    master.OutputBoard();
+                    Console.WriteLine("\n");
+                    ColorWrite("  (1)", ConsoleColor.Blue);Console.Write(" - Tree Search Depth - " + Board.MAX_SEARCH_DEPTH + "\n");
+                    ColorWrite("  (2)", ConsoleColor.Blue);Console.Write(" - Player Goes First - " + PLAYER_FIRST + "\n");
+                    ColorWrite("  (3)", ConsoleColor.Blue);Console.Write(" - Verbose Information - " + VERBOSE + "\n");
+                    ColorWrite("  (4)", ConsoleColor.Red);Console.Write(" - Clear Screen Each Turn - " + CLEARSCREEN + "\n");
+                    ColorWrite("  (5)", ConsoleColor.Blue);Console.Write(" - PLAY\n\n");
+
+
+                    Console.Write("Select T or F -> ");
+                    input = Console.ReadLine() ?? "";
+                    if(input.ToLower() == "t")
+                    {
+                        CLEARSCREEN = true;
+                    }else if(input.ToLower() == "f")
+                    {
+                        CLEARSCREEN = false;
+                    }   
+                    break;
+                case '5':
+                    leave = true;
+                    break;
+                default:
+                    continue;
+            }
+
+            if(leave == true) {break;}
+        }
+        
+        Console.Clear();
         try
         {
-            PlayPvAI(master);
+            if(PLAYER_FIRST)
+            {
+                PlayPvAI_PlayerFirst(master);
+            }else
+            {
+                PlayPvAI_AIFirst(master);
+            }
         }catch(Exception e)
         {
-            ColorWrite(e.Message, ConsoleColor.Red);
+            ColorWrite(e.Message + "\n", ConsoleColor.Red);
             Console.WriteLine(e.StackTrace);
         }
         
@@ -28,6 +156,7 @@ class Program
 
     public static void PlayPvP(Board board)
     {
+        if(CLEARSCREEN) Console.Clear();
         bool yellowTurn = true;
         int[] columns = new int[7] {0, 0, 0, 0, 0, 0, 0}; //tracks the CURRENT NUMBER of populated cells in each column. Also conveniently tracks which Y value to add the next cell that is dropped
         var defColor = Console.ForegroundColor;
@@ -194,10 +323,11 @@ class Program
         Console.WriteLine("\n\ngame over y'all");
     }
 
-    public static void PlayPvAI(Board board)
+    public static void PlayPvAI_PlayerFirst(Board board)
     {
         while(true) //main loop
         {
+            if(CLEARSCREEN) Console.Clear();
             board.OutputBoard();
             if(board.CheckVictory())
             {
@@ -287,9 +417,9 @@ class Program
                     continue;                
             }   
 
-
+            if(CLEARSCREEN) Console.Clear();            
+            
             board.OutputBoard();    
-
 
             ColorWrite("\n\nRED'S TURN\n    The computer is thinking...\n\n", ConsoleColor.Red);
 
@@ -334,13 +464,98 @@ class Program
                 }
             }
             
-            if(board.ColumnCounter[3] == 0) //if the player has not yet taken the victory spot, take it now
+            //check for possible moves based on column fullness
+
+            List<int> legalMoves = new List<int>();
+            for(int c = 0; c < 7; c++)
             {
-                board.Grid[3, 0].Color = Team.Red;
-                board.ColumnCounter[3]++;
-                continue;
+                if(board.ColumnCounter[c] != 6)
+                {
+                    legalMoves.Add(c);
+                }
             }
 
+
+            //if only one move is possible, take it
+            if(legalMoves.Count == 1)
+            {
+                board.Grid[legalMoves[0], board.ColumnCounter[legalMoves[0]]].Color = Team.Red;
+                board.ColumnCounter[legalMoves[0]]++;
+                continue;
+            }else if(legalMoves.Count == 0) //if zero moves are possible, return (it's a draw)
+            {
+                return;
+            }
+
+            //duplicate boards
+            List<Board> newBoards = new List<Board>();
+            
+            
+
+            for(int x = 0; x < legalMoves.Count; x++)
+            {
+                Board b = board.DeepClone();
+                b.Grid[legalMoves[x], b.ColumnCounter[legalMoves[x]]].Color = Team.Red;
+                newBoards.Add(b);
+            }
+
+
+            bool skipThisBoard;
+            List<int> returnedScores = new List<int>();
+            int givenScore;
+            foreach(Board working in newBoards)
+            {
+                skipThisBoard = false;
+
+                
+                
+                if(skipThisBoard)
+                {
+                    returnedScores.Add(-1);
+                    continue;
+                }
+
+                if(VERBOSE) Console.WriteLine("Evaluating move....");
+                givenScore = Board.EvaluateScore(1, working, Team.Red);
+                returnedScores.Add(givenScore);
+                if(VERBOSE) Console.WriteLine("Returned with score rating of {0}", givenScore);
+            }
+
+            (int val, int index) highest = (0, 0);
+            for(int i = 0; i < returnedScores.Count; i++)
+            {
+                if(returnedScores[i] > highest.val && returnedScores[i] != -1)
+                {
+                    Console.WriteLine("{0} is larger than {1}", returnedScores[i], highest);
+                    highest = (returnedScores[i], i);
+                }
+            }
+
+            board.Grid[legalMoves[highest.index], board.ColumnCounter[legalMoves[highest.index]]].Color = Team.Red;
+            board.ColumnCounter[legalMoves[highest.index]]++;
+
+            if(VERBOSE) Console.WriteLine("Moved in column {0}, array index {1}, score rating of {2}", legalMoves[highest.index], highest.index, highest.val);
+        }
+    }
+
+    public static void PlayPvAI_AIFirst(Board board)
+    {
+        while(true) //main loop
+        {
+            if(CLEARSCREEN) Console.Clear();            
+            board.OutputBoard();
+            if(board.CheckVictory())
+            {
+                return;
+            }
+
+            board.OutputBoard();    
+
+
+            ColorWrite("\n\nRED'S TURN\n    The computer is thinking...\n\n", ConsoleColor.Red);
+
+            //complete preliminary checks => check for an attack from yellow, check for a case where only one move is possible, check if the center column has a piece in it
+            
             //check for possible moves based on column fullness
 
             List<int> legalMoves = new List<int>();
@@ -352,10 +567,6 @@ class Program
                 }
             }
             Console.WriteLine();
-            foreach(int m in legalMoves)
-            {
-                Console.Write(" " + m);
-            }
 
             //if only one move is possible, take it
             if(legalMoves.Count == 1)
@@ -396,10 +607,10 @@ class Program
                     continue;
                 }
 
-                Console.WriteLine("Evaluating move....");
+                if(VERBOSE) Console.WriteLine("Evaluating move....");
                 givenScore = Board.EvaluateScore(1, working, Team.Red);
                 returnedScores.Add(givenScore);
-                Console.WriteLine("Returned with score rating of {0}", givenScore);
+                if(VERBOSE) Console.WriteLine("Returned with score rating of {0}", givenScore);
             }
 
             (int val, int index) highest = (0, 0);
@@ -414,7 +625,94 @@ class Program
             board.Grid[legalMoves[highest.index], board.ColumnCounter[legalMoves[highest.index]]].Color = Team.Red;
             board.ColumnCounter[legalMoves[highest.index]]++;
 
-            Console.WriteLine("Moved in column {0}, array index {1}, score rating of {2}", legalMoves[highest.index], highest.index, highest.val);
+            if(VERBOSE) Console.WriteLine("Moved in column {0}, array index {1}, score rating of {2}", legalMoves[highest.index], highest.index, highest.val);
+
+            if(CLEARSCREEN) Console.Clear();
+            board.OutputBoard();
+
+            ColorWrite("\n\nYELLOW'S TURN\n    Please select the column to drop your piece\n\n", ConsoleColor.Yellow);
+
+            char key = Console.ReadKey().KeyChar;
+            Console.WriteLine("\n");
+            int num;
+
+            switch(key)
+            {
+
+                case '1':
+                    num = 0;
+                    if(board.ColumnCounter[num] == 7)
+                    {
+                        continue;
+                    }
+                        board.Grid[num, board.ColumnCounter[num]].Color = Team.Yellow;
+                    board.ColumnCounter[num]++;
+                    break;
+
+                case '2':
+                    num = 1;
+                    if(board.ColumnCounter[num] == 7)
+                    {
+                        continue;
+                    }
+                        board.Grid[num, board.ColumnCounter[num]].Color = Team.Yellow;
+                    board.ColumnCounter[num]++;
+                    break;
+
+                case '3':
+                    num = 2;
+                    if(board.ColumnCounter[num] == 7)
+                    {
+                        continue;
+                    }
+                        board.Grid[num, board.ColumnCounter[num]].Color = Team.Yellow;
+                    board.ColumnCounter[num]++;
+                    break;
+
+                case '4':
+                    num = 3;
+                    if(board.ColumnCounter[num] == 7)
+                    {
+                        continue;
+                    }
+                        board.Grid[num, board.ColumnCounter[num]].Color = Team.Yellow;
+                    board.ColumnCounter[num]++;
+                    break;
+
+                case '5':
+                    num = 4;
+                    if(board.ColumnCounter[num] == 7)
+                    {
+                        continue;
+                    }
+                        board.Grid[num, board.ColumnCounter[num]].Color = Team.Yellow;
+                    board.ColumnCounter[num]++;
+                    break;
+
+                case '6':
+                    num = 5;
+                    if(board.ColumnCounter[num] == 7)
+                    {
+                        continue;
+                    }
+                        board.Grid[num, board.ColumnCounter[num]].Color = Team.Yellow;
+                    board.ColumnCounter[num]++;
+                    break;
+
+                case '7':
+                    num = 6;
+                    if(board.ColumnCounter[num] == 7)
+                    {
+                        continue;
+                    }
+                        board.Grid[num, board.ColumnCounter[num]].Color = Team.Yellow;
+                    board.ColumnCounter[num]++;
+                    break;
+
+                default:
+                    continue;                
+            }   
+
         }
     }
 }

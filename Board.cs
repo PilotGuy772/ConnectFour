@@ -54,7 +54,7 @@ class Board : IDeepCloneable<Board>
         }
     }
 
-    public static int MAX_SEARCH_DEPTH = 6;
+    public static int MAX_SEARCH_DEPTH = 5;
 
     public Cell[,] Grid { get; set; }
     public int[] ColumnCounter { get; set; }
@@ -131,9 +131,6 @@ class Board : IDeepCloneable<Board>
         if(legalColumns.Count == 1) //in case of only one possible move
         {
             forceMoveColumn = legalColumns[0]; //the forced move will be this one
-        }else if(legalColumns.Count == 0) //in case of a draw
-        {
-            return 0;// zero points
         }
 
 
@@ -189,7 +186,6 @@ class Board : IDeepCloneable<Board>
                                             return -125; //so it should return -125 immediately
                                         }
                                         logbook.Add(ScoreCriteria.OpponentAttack);
-                                        forceMoveColumn = next.x; //the AI now must move in the column that the opponent would have to move to make a win
                                         continue;
                                     }else
                                     {
@@ -199,7 +195,6 @@ class Board : IDeepCloneable<Board>
                                         }
                                         logbook.Add(ScoreCriteria.Attack);
                                         logbook.Add(ScoreCriteria.OpponentForcedHand);
-                                        forceMoveColumn = next.x; //likewise if it is the player's turn to move and the AI has an attack, the player will move to prevent it.
                                         continue;
                                     }
                                 }
@@ -258,61 +253,16 @@ class Board : IDeepCloneable<Board>
                 newBoards[i].Grid[legalColumns[i],newBoards[i].ColumnCounter[legalColumns[i]]].Color = turn; //make the move                
             } //make a new copy of the board for each move that will be made
 
-            bool skipThisBoard;
+
             foreach(Board working in newBoards)
             {
-                skipThisBoard = false;
-
-                for(int x = 0; x < 7; x++)
-                {
-                    for(int y = 0; y < 6; y++)
-                    {
-                        if (working.Grid[x, y].Color == Team.None) //if this cell is empty, continue
-                        {
-                            continue;
-                        }
-
-                        Team color = working.Grid[x, y].Color;
-                        foreach (Directions dir in working.Grid[x, y].Affects) //iterate through each direction
-                        {
-                            (int x, int y) next = AdvanceInDirection(dir, (x, y)); //get the nearest cell in that direction
-                            if (working.Grid[next.x, next.y].Color == color) //if it's followed by another cell of the same color 
-                            {
-                                next = AdvanceInDirection(dir, next); //continue in the same direction
-                                if (working.Grid[next.x, next.y].Color == color) //if by yet another cell of the same color (third)
-                                {
-                                    next = AdvanceInDirection(dir, next);
-                                    if (working.Grid[next.x, next.y].Color == Team.None) //it might be a threat, but only if it's followed by an empty cell
-                                    { //yeah it's a threat
-                                        if(next.y == 0 || working.Grid[next.x, next.y - 1].Color != Team.None) //if there is a populated cell below (or a border)...
-                                        {
-                                            if(color != turn) //If this is the active player putting himself in a situation where the opponent will win on the next move
-                                            {
-                                                skipThisBoard = true;
-                                            }
-                                        }
-                                    }else
-                                    {
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                if(skipThisBoard)
-                {
-                    continue;
-                }
-
                 givenScore = EvaluateScore(treeDepth + 1, working, turn.Swap());
                 returnedScores.Add(givenScore);
             }
         }
 
         int sum = returnedScores.Sum() + score;
-        return (int)Math.Round((decimal)(sum / returnedScores.Count + 1));
+        return (int)Math.Round((decimal)(sum / (returnedScores.Count + 1)));
 
     }
 
