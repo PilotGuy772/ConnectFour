@@ -22,17 +22,17 @@ I have provided in the [releases](https://github.com/PilotGuy772/ConnectFour/rel
 ```
 |- v0.0.0 -> preliminary version; basic infrastructure only
 |- v1.0.0 -> first working version
+   |- v1.1.0 -> QOL changes, added a menu at startup
 ```
 Goals for the future:
 * Add a proper minimax algorithm
-* Add a menu to choose tree depth and other choices
 * Optimize like crazy to allow for deeper tree searches
 * Implement multithreading
 
 Known Issues:
 * AI sometimes places two tokens in one turn
-* AI sometimes ignores player attacks that are entirely on y = 0
+* AI consistently ignores the possibility for a player attack with a three-in-a-row with both ends empty (a guaranteed loss)
 * AI sometimes spits out four extra tokens on the board after the player wins
-* Sometimes there's a ListIndexOutOfRangeException ???
+* Sometimes there's a DivideByZeroException ???
 
 I made most of this in one sitting don't mind the spagetti code, it will get better I promise.
