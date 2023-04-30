@@ -1,12 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "rOiBb4Rgmq5id9p+I7NcaSdutX8wFXlXBBYUbd31P+fjur/7vdVUB9I4X5r/Vr4luGxvleHzBpsuccddbssNww==",
+  "dgSpecHash": "llMBUsDKith/S03vBy0KKrZVhrP6oCx/IxzEynZ1+Wwtl+bqcr5MOBa/UpudhqwJ+Bp6j4uex6dJ8pkWaR2i+g==",
   "success": true,
   "projectFilePath": "/media/laeth/SSDLinux/Documents/programs/ConnectFour/ConnectFour.csproj",
   "expectedPackageFiles": [
-    "/home/laeth/.nuget/packages/microsoft.netcore.app.runtime.win-x64/7.0.4/microsoft.netcore.app.runtime.win-x64.7.0.4.nupkg.sha512",
-    "/home/laeth/.nuget/packages/microsoft.aspnetcore.app.runtime.win-x64/7.0.4/microsoft.aspnetcore.app.runtime.win-x64.7.0.4.nupkg.sha512",
-    "/home/laeth/.nuget/packages/microsoft.netcore.app.host.win-x64/7.0.4/microsoft.netcore.app.host.win-x64.7.0.4.nupkg.sha512"
+    "/home/laeth/.nuget/packages/microsoft.netcore.app.runtime.linux-x64/7.0.4/microsoft.netcore.app.runtime.linux-x64.7.0.4.nupkg.sha512",
+    "/home/laeth/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-x64/7.0.4/microsoft.aspnetcore.app.runtime.linux-x64.7.0.4.nupkg.sha512"
   ],
   "logs": []
 }

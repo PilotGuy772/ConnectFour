@@ -1,2 +1,5 @@
 /.vscode
 /plan.txt
+bin/
+/publishProject.sh
+obj/
