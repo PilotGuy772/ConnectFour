@@ -11,7 +11,7 @@ In this program, I am working on my best attempt at a heuristics-based solving a
 
 My Connect Four AI is still at an early stage of development, so natuarally it is not the best it can be. Right now, the system works based on a recursive algorithm that explores a tree to a set depth and scores board states, then returns the average scores up to the root of the tree so the AI can choose based on the scores what is the best move. In any given board, the AI has up to seven choices available to it, one for each column. In its current state the AI will always act in self preservation if it finds it is under attack (about to lose if it doesn't do something about it immediately) and also assumes that the player it plays against will do the same. 
 
-I plan to implement a proper [minimax](https://en.wikipedia.org/Minimax) algorithm in the next version.
+I plan to implement a proper [minimax](https://en.wikipedia.org/wiki/Minimax) algorithm in the next version.
 
 ### Installation
 
