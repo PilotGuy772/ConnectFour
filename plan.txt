@@ -97,3 +97,36 @@ IV. Each instance of the function will return an average score:
   B. With its own score
 V. Average the scores given by the child nodes with the current board state's score
 VI. Return the new score rounded to the nearest whole.
+
+Minimax Searching Outline - No Pruning
+
+I. Take the board, the current player, and the current tree depth as parameters
+II. Determine which columns cannot be moved in
+III. Duplicate the game board, once for each legal move
+IV. Make the move on the game board
+V. Passing the board, the other player, and the tree depth + 1 as a parameter, call upon the minimax algorithm again
+VI. If this node is a leaf node, i.e, bottom of the tree or terminal state, calculate the score of the node. Return this score
+VII. If not, compare the scores of all the children.
+  A. If playing as YELLOW, choose the lowest score and return it
+  B. If playing as RED, choose the highest score and return it
+
+Minimax Special Scoring
+
+When scoring for a minimax algorithm, it is essential that a victory state counts for the highest possible number of points and a defeat state counts for the lowest possible. Thus to score for minimax we will use a -10 - +10 range where it is impossible to achieve either extreme except through a win or loss. This will be achieved by using diminishing returns; as the score gets higher it becomes increasingly difficult to increase it. This will be achieved by a multiplier that approaches zero as the score approaches ten. As such, it will be impossible to reach ten or negative ten without a win or loss.
+
+The multiplier will start at one. As the percentage of progress towards either extreme increases, the multiplier will decrease by an equivalent amount. In pseudocode:
+
+decimal multiplier;
+decimal score;
+decimal percent;
+if (score >= 0)
+{
+  percent = score / 10;
+}else
+{
+  percent = score / (-10);
+}
+
+multiplier = 1.0m - percent;
+
+This calculation is performed after every scoreable item is added to the score. As a backup, there will also be a check to see if the score is greater than ten; if it is, it is set back to 9.95. Scores are rounded to the nearest thousandth.

@@ -423,118 +423,50 @@ class Program
 
             ColorWrite("\n\nRED'S TURN\n    The computer is thinking...\n\n", ConsoleColor.Red);
 
-            //complete preliminary checks => check for an attack from yellow, check for a case where only one move is possible, check if the center column has a piece in it
-            for(int x = 0; x < 7; x++)
+            //check possible moves
+            List<int> noMove = new List<int>();
+            for(int i = 0; i < 7; i++) if(board.ColumnCounter[i] == 6) noMove.Add(i); //add full columns to the noMove list
+
+            decimal[] scores = new decimal[7]; //track scores
+            Board dupe;
+            for(int i = 0; i < 7; i++)
             {
-                for(int y = 0; y < 6; y++)
+                if(noMove.Contains(i)) //if this is an illegal move, give it a super low score so that it is not chosen
                 {
-                    if (board.Grid[x, y].Color == Team.None) //if this cell is empty, continue
-                    {
-                        continue;
-                    }
-
-                    Team color = board.Grid[x, y].Color;
-                    foreach (Directions dir in board.Grid[x, y].Affects) //iterate through each direction
-                    {
-                        (int x, int y) next = Board.AdvanceInDirection(dir, (x, y)); //get the nearest cell in that direction
-                        if (board.Grid[next.x, next.y].Color == color) //if it's followed by another cell of the same color 
-                        {
-                            next = Board.AdvanceInDirection(dir, next); //continue in the same direction
-                            if (board.Grid[next.x, next.y].Color == color) //if by yet another cell of the same color (third)
-                            {
-                                next = Board.AdvanceInDirection(dir, next);
-                                if (board.Grid[next.x, next.y].Color == Team.None) //it might be a threat, but only if it's followed by an empty cell
-                                { //yeah it's a threat
-                                    if(next.y == 0 || board.Grid[next.x, next.y - 1].Color != Team.None) //if there is a populated cell below (or a border)...
-                                    {
-                                        if(color == Team.Yellow) //if the opponent is directly threatening the AI,
-                                        {
-                                            board.Grid[next.x, board.ColumnCounter[next.x]].Color = Team.Red; //respond accordingly
-                                            board.ColumnCounter[next.x]++;
-                                            continue;
-                                        }
-                                    }
-                                }else
-                                {
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            //check for possible moves based on column fullness
-
-            List<int> legalMoves = new List<int>();
-            for(int c = 0; c < 7; c++)
-            {
-                if(board.ColumnCounter[c] != 6)
-                {
-                    legalMoves.Add(c);
-                }
-            }
-
-
-            //if only one move is possible, take it
-            if(legalMoves.Count == 1)
-            {
-                board.Grid[legalMoves[0], board.ColumnCounter[legalMoves[0]]].Color = Team.Red;
-                board.ColumnCounter[legalMoves[0]]++;
-                continue;
-            }else if(legalMoves.Count == 0) //if zero moves are possible, return (it's a draw)
-            {
-                return;
-            }
-
-            //duplicate boards
-            List<Board> newBoards = new List<Board>();
-            
-            
-
-            for(int x = 0; x < legalMoves.Count; x++)
-            {
-                Board b = board.DeepClone();
-                b.Grid[legalMoves[x], b.ColumnCounter[legalMoves[x]]].Color = Team.Red;
-                newBoards.Add(b);
-            }
-
-
-            bool skipThisBoard;
-            List<int> returnedScores = new List<int>();
-            int givenScore;
-            foreach(Board working in newBoards)
-            {
-                skipThisBoard = false;
-
-                
-                
-                if(skipThisBoard)
-                {
-                    returnedScores.Add(-1);
+                    scores[i] = -101.0m;
+                    if(VERBOSE) Console.WriteLine("Skipped evaluation of column {0}", i);
                     continue;
                 }
 
-                if(VERBOSE) Console.WriteLine("Evaluating move....");
-                givenScore = Board.EvaluateScore(1, working, Team.Red);
-                returnedScores.Add(givenScore);
-                if(VERBOSE) Console.WriteLine("Returned with score rating of {0}", givenScore);
+                dupe = board.DeepClone(); //duplicate board
+                dupe.Grid[i, dupe.ColumnCounter[i]].Color = Team.Red; //make the move
+                dupe.ColumnCounter[i]++;
+                if(VERBOSE) Console.WriteLine("Evaluating column {0}", i);
+                scores[i] = Board.Minimax(dupe, 1, Team.Yellow); //call minimax and set the corresponding spot in the score tracker to the returned score
+                if(VERBOSE) Console.WriteLine("Complete! Returned with score {0}", scores[i]);
             }
 
-            (int val, int index) highest = (0, 0);
-            for(int i = 0; i < returnedScores.Count; i++)
+            decimal highscore = -102;
+            int highscoreIndex = -1; //find the index and value of the highest returned score
+            for(int i = 0; i < 7; i++)
             {
-                if(returnedScores[i] > highest.val && returnedScores[i] != -1)
+                if(scores[i] > highscore)
                 {
-                    Console.WriteLine("{0} is larger than {1}", returnedScores[i], highest);
-                    highest = (returnedScores[i], i);
+                    highscore = scores[i];
+                    highscoreIndex = i;
                 }
             }
 
-            board.Grid[legalMoves[highest.index], board.ColumnCounter[legalMoves[highest.index]]].Color = Team.Red;
-            board.ColumnCounter[legalMoves[highest.index]]++;
+            if(highscore == -102 | highscoreIndex == -1)
+            {
+                Console.WriteLine("\n\n IT'S A DRAW\n\n");
+                return;
+            }
 
-            if(VERBOSE) Console.WriteLine("Moved in column {0}, array index {1}, score rating of {2}", legalMoves[highest.index], highest.index, highest.val);
+            if(VERBOSE) Console.WriteLine("MOVE SELECTED: COL {0} WITH SCORE {1}", highscoreIndex, highscore);
+            board.Grid[highscoreIndex, board.ColumnCounter[highscoreIndex]].Color = Team.Red;
+            board.ColumnCounter[highscoreIndex]++;
+
         }
     }
 
@@ -554,79 +486,49 @@ class Program
 
             ColorWrite("\n\nRED'S TURN\n    The computer is thinking...\n\n", ConsoleColor.Red);
 
-            //complete preliminary checks => check for an attack from yellow, check for a case where only one move is possible, check if the center column has a piece in it
-            
-            //check for possible moves based on column fullness
+            //check possible moves
+            List<int> noMove = new List<int>();
+            for(int i = 0; i < 7; i++) if(board.ColumnCounter[i] == 6) noMove.Add(i); //add full columns to the noMove list
 
-            List<int> legalMoves = new List<int>();
-            for(int c = 0; c < 7; c++)
+            decimal[] scores = new decimal[7]; //track scores
+            Board dupe;
+            for(int i = 0; i < 7; i++)
             {
-                if(board.ColumnCounter[c] != 6)
+                if(noMove.Contains(i)) //if this is an illegal move, give it a super low score so that it is not chosen
                 {
-                    legalMoves.Add(c);
-                }
-            }
-            Console.WriteLine();
-
-            //if only one move is possible, take it
-            if(legalMoves.Count == 1)
-            {
-                board.Grid[legalMoves[0], board.ColumnCounter[legalMoves[0]]].Color = Team.Red;
-                board.ColumnCounter[legalMoves[0]]++;
-                continue;
-            }else if(legalMoves.Count == 0) //if zero moves are possible, return (it's a draw)
-            {
-                return;
-            }
-
-            //duplicate boards
-            List<Board> newBoards = new List<Board>();
-            
-            
-
-            for(int x = 0; x < legalMoves.Count; x++)
-            {
-                Board b = board.DeepClone();
-                b.Grid[legalMoves[x], b.ColumnCounter[legalMoves[x]]].Color = Team.Red;
-                newBoards.Add(b);
-            }
-
-            //check each board for suicide moves
-            bool skipThisBoard;
-            List<int> returnedScores = new List<int>();
-            int givenScore;
-            foreach(Board working in newBoards)
-            {
-                skipThisBoard = false;
-
-                
-                
-                if(skipThisBoard)
-                {
-                    returnedScores.Add(-1);
+                    scores[i] = -101.0m;
+                    if(VERBOSE) Console.WriteLine("Skipped evaluation of column {0}", i);
                     continue;
                 }
 
-                if(VERBOSE) Console.WriteLine("Evaluating move....");
-                givenScore = Board.EvaluateScore(1, working, Team.Red);
-                returnedScores.Add(givenScore);
-                if(VERBOSE) Console.WriteLine("Returned with score rating of {0}", givenScore);
+                dupe = board.DeepClone(); //duplicate board
+                dupe.Grid[i, dupe.ColumnCounter[i]].Color = Team.Red; //make the move
+                dupe.ColumnCounter[i]++;
+                if(VERBOSE) Console.WriteLine("Evaluating column {0}", i);
+                scores[i] = Board.Minimax(dupe, 1, Team.Yellow); //call minimax and set the corresponding spot in the score tracker to the returned score
+                if(VERBOSE) Console.WriteLine("Complete! Returned with score {0}", scores[i]);
             }
 
-            (int val, int index) highest = (0, 0);
-            for(int i = 0; i < returnedScores.Count; i++)
+            decimal highscore = -102;
+            int highscoreIndex = -1; //find the index and value of the highest returned score
+            for(int i = 0; i < 7; i++)
             {
-                if(returnedScores[i] > highest.val && returnedScores[i] != -1)
+                if(scores[i] > highscore)
                 {
-                    highest = (returnedScores[i], i);
+                    highscore = scores[i];
+                    highscoreIndex = i;
                 }
             }
 
-            board.Grid[legalMoves[highest.index], board.ColumnCounter[legalMoves[highest.index]]].Color = Team.Red;
-            board.ColumnCounter[legalMoves[highest.index]]++;
+            if(highscore == -102 | highscoreIndex == -1)
+            {
+                Console.WriteLine("\n\n IT'S A DRAW\n\n");
+                return;
+            }
 
-            if(VERBOSE) Console.WriteLine("Moved in column {0}, array index {1}, score rating of {2}", legalMoves[highest.index], highest.index, highest.val);
-
+            if(VERBOSE) Console.WriteLine("MOVE SELECTED: COL {0} WITH SCORE {1}", highscoreIndex, highscore);
+            board.Grid[highscoreIndex, board.ColumnCounter[highscoreIndex]].Color = Team.Red;
+            board.ColumnCounter[highscoreIndex]++;
             if(CLEARSCREEN) Console.Clear();
             board.OutputBoard();
 

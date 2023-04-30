@@ -111,186 +111,187 @@ class Board : IDeepCloneable<Board>
         }
     }
 
-    public static int EvaluateScore(int treeDepth, Board board, Team turn)
+    private static decimal CurveScore(decimal input)
     {
-        List<ScoreCriteria> logbook = new List<ScoreCriteria>();
-        int forceMoveColumn = -1; //what column to move if the move is forced
-        List<int> legalColumns = new List<int>(); //counts which columns are empty and can be moved in
-        
-        for(int c = 0; c < 6; c++)
-        {
-            if(board.ColumnCounter[c] != 6) //if there are any columns with space left in them,
-            {
-                legalColumns.Add(c); //add those columns to the legal columns list
-            }else
-            {
-                logbook.Add(ScoreCriteria.ImpossibleMove); //if there is an illegal column, points must be deducted
-
-            }
-        }
-        if(legalColumns.Count == 1) //in case of only one possible move
-        {
-            forceMoveColumn = legalColumns[0]; //the forced move will be this one
-        }
-
-
-        List<(int, int)> threatSpaces = new List<(int, int)>();
-        //count enemy threats & blockades & attacks
-        for (int y = 0; y < 6; y++)
-        {
-            for (int x = 0; x < 7; x++) //iterate through every cell
-            {
-                if (board.Grid[x, y].Color == Team.None) //if this cell is empty, continue
-                {
-                    continue;
-                }
-
-                Team color = board.Grid[x, y].Color;
-                foreach (Directions dir in board.Grid[x, y].Affects) //iterate through each direction
-                {
-                    (int x, int y) next = AdvanceInDirection(dir, (x, y)); //get the nearest cell in that direction
-                    if (board.Grid[next.x, next.y].Color == color) //if it's followed by another cell of the same color 
-                    {
-                        next = AdvanceInDirection(dir, next); //continue in the same direction
-                        if (board.Grid[next.x, next.y].Color == Team.None) //if it's followed again by an empty cell
-                        { //then it's a blockade
-                            if(color == Team.Yellow)
-                            {
-                                logbook.Add(ScoreCriteria.OpponentBlockade);
-                                continue;
-                            }else
-                            {
-                                logbook.Add(ScoreCriteria.Blockade);
-                                continue;
-                            }
-                        }
-                        if (board.Grid[next.x, next.y].Color == color) //if by yet another cell of the same color (third)
-                        {
-                            next = AdvanceInDirection(dir, next);
-                            if (board.Grid[next.x, next.y].Color == Team.None) //it might be a threat, but only if it's followed by an empty cell
-                            { //yeah it's a threat
-
-                                if(threatSpaces.Contains(next))
-                                {
-                                    continue;
-                                }
-                                threatSpaces.Add(next);
-
-
-                                if(next.y == 0 || board.Grid[next.x, next.y - 1].Color != Team.None) //if there is a populated cell below (or a border)...
-                                {
-                                    if(color == Team.Yellow) //it is an attack
-                                    {
-                                        if(turn == Team.Yellow) //if yellow has an attack and it is currently yellow's turn, it is an inevitable win (AI is always red)
-                                        {
-                                            return -125; //so it should return -125 immediately
-                                        }
-                                        logbook.Add(ScoreCriteria.OpponentAttack);
-                                        continue;
-                                    }else
-                                    {
-                                        if(turn == Team.Red) //likewise if it is red's turn and red has an attack, it is an inevitable win
-                                        {
-                                            return 125; //so it should return 125 immediately
-                                        }
-                                        logbook.Add(ScoreCriteria.Attack);
-                                        logbook.Add(ScoreCriteria.OpponentForcedHand);
-                                        continue;
-                                    }
-                                }
-
-                                if(color == Team.Yellow) //otherwise it's just a threat
-                                {
-                                    logbook.Add(ScoreCriteria.OpponentThreat);
-                                    continue;
-                                }else
-                                {
-                                    logbook.Add(ScoreCriteria.Threat);
-                                    continue;
-                                }
-                            }else
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        int score = 0;
-        foreach(ScoreCriteria cr in logbook)
-        {
-            score += (int)cr; //convert to integers and add to the score counter
-        }
-
-
-        if(treeDepth == MAX_SEARCH_DEPTH)
-        {
-            return score;
-        }
-
-
-        List<int> returnedScores = new List<int>();
-        Board[] newBoards;
-        int givenScore;
-
-        if(forceMoveColumn != -1) //if the system is forced to move somewhere
-        {
-            Board newBoard = board.DeepClone();
-            newBoard.Grid[forceMoveColumn, newBoard.ColumnCounter[forceMoveColumn]].Color = turn;
-            //            xcoord is cooumn,  where it lands is tracked in columnCounter     turns the color of whose turn it is
-            newBoard.ColumnCounter[forceMoveColumn]++;
-            givenScore = EvaluateScore(treeDepth + 1, newBoard, turn.Swap());
-            returnedScores.Add(givenScore);
-        }else //otherwise, proceed normally
-        {
-
-            newBoards = new Board[legalColumns.Count];
-            for(int i = 0; i < legalColumns.Count; i++)
-            {
-                newBoards[i] = board.DeepClone();
-                newBoards[i].Grid[legalColumns[i],newBoards[i].ColumnCounter[legalColumns[i]]].Color = turn; //make the move                
-            } //make a new copy of the board for each move that will be made
-
-
-            foreach(Board working in newBoards)
-            {
-                givenScore = EvaluateScore(treeDepth + 1, working, turn.Swap());
-                returnedScores.Add(givenScore);
-            }
-        }
-
-        int sum = returnedScores.Sum() + score;
-        return (int)Math.Round((decimal)(sum / (returnedScores.Count + 1)));
-
+        decimal varyubul = (decimal)( Math.Atan((double)(input / 100)) * (20 * Math.PI) ); //arctan function with an asymptote at y = 100
+        //Console.WriteLine("Evaluated with a score of " + varyubul);
+        return varyubul;
     }
 
-    public Board DeepClone()
+    public decimal EvaluateScore() //given a board, evaluate its score
     {
-        Cell[,] newGrid = new Cell[7,6];
-        int colorIndex;
+        List<ScoreCriteria> log = new List<ScoreCriteria>();
+        (int x, int y) next;
+        Team color;
 
+        foreach(int i in this.ColumnCounter.Where(count => count == 6)) //go through each full column
+        {
+            log.Add(ScoreCriteria.ImpossibleMove); //and deduct points
+        }
+        
         for(int x = 0; x < 7; x++)
         {
             for(int y = 0; y < 6; y++)
             {
-                colorIndex = (int)this.Grid[x, y].Color;
 
+                //iterating through each cell
+
+                //checks
+                if(this.Grid[x, y].Color == Team.None)//if empty
+                {
+                    continue;//skip
+                }
+
+                color = this.Grid[x, y].Color;
+
+                foreach(Directions dir in this.Grid[x, y].Affects)
+                {
+                    next = AdvanceInDirection(dir, (x, y));
+                    if(this.Grid[next.x, next.y].Color != color) //if this isn't at least a two-in-a-row
+                    {
+                        continue; //skip it
+                    }
+
+                    next = AdvanceInDirection(dir, next);
+                    if(this.Grid[next.x, next.y].Color == Team.None)
+                    { //blockade
+
+                        if(color == Team.Yellow) log.Add(ScoreCriteria.OpponentBlockade); //add the appropriate item
+                        if(color == Team.Red) log.Add(ScoreCriteria.Blockade);
+
+                    }else if(this.Grid[next.x, next.y].Color == color)//three in a row
+                    { 
+                        next = AdvanceInDirection(dir, next);
+
+                        if(this.Grid[next.x, next.y].Color == Team.None) //threat
+                        {
+                            if(next.y == 0 || this.Grid[next.x, next.y - 1].Color != Team.None) //if there is a populated cell below, it's an attack
+                            {
+
+                                if(color == Team.Yellow) log.Add(ScoreCriteria.OpponentAttack); //add the appropriate item
+                                if(color == Team.Red) log.Add(ScoreCriteria.Attack);
+
+                            }else //otherwise it's just a regular threat
+                            {
+
+                                if(color == Team.Yellow) log.Add(ScoreCriteria.OpponentThreat); //add the appropriate item
+                                if(color == Team.Red) log.Add(ScoreCriteria.Threat);
+
+                            }
+                            
+
+                        }else if(this.Grid[next.x, next.y].Color == color) //four-in-a-row
+                        {
+
+                            if(color == Team.Yellow) return -100.0m; //return the appropriate score
+                            if(color == Team.Red) return 100.0m;
+
+                        }
+                    }
+                }
+                
+            }
+        }//for loop
+
+        //generate raw score
+
+        decimal rawScore = 0.0m;
+        foreach(ScoreCriteria s in log)
+        {
+            rawScore += (decimal)( (int)s );
+        }
+
+        return CurveScore(rawScore);
+
+    }
+
+    public static decimal Minimax(Board board, int depth, Team turn)
+    {
+        //Console.WriteLine("\nStarted new search as player " + turn);
+        //Console.WriteLine("Current board state:");
+        //board.OutputBoard();
+        
+        if(depth == MAX_SEARCH_DEPTH)
+        {
+            return board.EvaluateScore();
+        }
+        
+        
+        List<int> noMove = new List<int>();
+        for(int i = 0; i < 7; i++) //check for full columns and add them to a list
+        {
+            if(board.ColumnCounter[i] == 6)
+            {
+                noMove.Add(i);
+            }
+        }
+
+        Board[] moves = new Board[7];
+        for(int i = 0; i < 7; i++)
+        {
+            if(noMove.Contains(i)) //remove illegal moves from the queue
+            {
+                continue;
+            }
+
+            moves[i] = board.DeepClone(); //clone the board
+
+            moves[i].Grid[i, moves[i].ColumnCounter[i]].Color = turn; //make the move on the new board
+            moves[i].ColumnCounter[i]++;
+        }
+
+
+        decimal best;
+
+        if(turn == Team.Yellow) //MIN side
+        {
+            best = 101;
+            
+            foreach(Board b in moves.Where(board => board != null))
+            {
+                best = Math.Min(best, Minimax(b, depth + 1, turn.Swap()));
+            }
+        }else //max side
+        {
+            best = -101;
+
+            foreach(Board b in moves.Where(board => board != null))
+            {
+                best = Math.Max(best, Minimax(b, depth + 1, turn.Swap()));                
+            }
+
+            
+        }
+
+        //Console.WriteLine("Chose child with score " + best);
+        return best;
+    }
+
+    public Board DeepClone()
+    {
+        Cell[,] newGrid = new Cell[7, 6];
+        for(int x = 0; x < 7; x++)
+        {
+            for(int y = 0; y < 6; y++)
+            {
                 newGrid[x, y] = new Cell() {
-                    Color = (Team)colorIndex,
-                    Affects = this.Grid[x, y].Affects
+                    Affects = this.Grid[x, y].Affects,
+                    Color = (Team)((int)this.Grid[x, y].Color)
                 };
             }
         }
 
-        int[] columnCounter = new int[7] {0, 0, 0, 0, 0, 0, 0};
-        for(int i = 0; i < 7; i++)
+        int[] newCol = new int[7];
+
+        for(int x = 0; x < 7; x++)
         {
-            columnCounter[i] = this.ColumnCounter[i];
+            newCol[x] = this.ColumnCounter[x];
         }
 
-        return new Board(newGrid, columnCounter);
+        return new Board(){
+            Grid = newGrid,
+            ColumnCounter = newCol
+        };
 
     }
 
