@@ -442,7 +442,7 @@ class Program
                 dupe.Grid[i, dupe.ColumnCounter[i]].Color = Team.Red; //make the move
                 dupe.ColumnCounter[i]++;
                 if(VERBOSE) Console.WriteLine("Evaluating column {0}", i);
-                scores[i] = Board.Minimax(dupe, 1, Team.Yellow); //call minimax and set the corresponding spot in the score tracker to the returned score
+                scores[i] = Board.Minimax(dupe, 1, Team.Yellow, -101, 101); //call minimax and set the corresponding spot in the score tracker to the returned score
                 if(VERBOSE) Console.WriteLine("Complete! Returned with score {0}", scores[i]);
             }
 
@@ -505,7 +505,7 @@ class Program
                 dupe.Grid[i, dupe.ColumnCounter[i]].Color = Team.Red; //make the move
                 dupe.ColumnCounter[i]++;
                 if(VERBOSE) Console.WriteLine("Evaluating column {0}", i);
-                scores[i] = Board.Minimax(dupe, 1, Team.Yellow); //call minimax and set the corresponding spot in the score tracker to the returned score
+                scores[i] = Board.Minimax(dupe, 1, Team.Yellow, -110, 110); //call minimax and set the corresponding spot in the score tracker to the returned score
                 if(VERBOSE) Console.WriteLine("Complete! Returned with score {0}", scores[i]);
             }
 

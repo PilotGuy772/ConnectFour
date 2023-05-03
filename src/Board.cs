@@ -205,13 +205,13 @@ class Board : IDeepCloneable<Board>
 
     }
 
-    public static decimal Minimax(Board board, int depth, Team turn)
+    public static decimal Minimax(Board board, int depth, Team turn, decimal alpha, decimal beta)
     {
         //Console.WriteLine("\nStarted new search as player " + turn);
         //Console.WriteLine("Current board state:");
         //board.OutputBoard();
         
-        if(depth == MAX_SEARCH_DEPTH)
+        if(depth == MAX_SEARCH_DEPTH || board.CheckVictory())
         {
             return board.EvaluateScore();
         }
@@ -246,18 +246,41 @@ class Board : IDeepCloneable<Board>
         if(turn == Team.Yellow) //MIN side
         {
             best = 101;
+
             
             foreach(Board b in moves.Where(board => board != null))
             {
-                best = Math.Min(best, Minimax(b, depth + 1, turn.Swap()));
+                best = Math.Min(best, Minimax(b, depth + 1, turn.Swap(), alpha, beta));
+                if(best < beta)
+                {
+                    beta = best; 
+                } 
+
+                if(best <= alpha) 
+                {
+
+                   break; //alpha-beta pruning
+                }
             }
+
+            
         }else //max side
         {
             best = -101;
 
+
             foreach(Board b in moves.Where(board => board != null))
             {
-                best = Math.Max(best, Minimax(b, depth + 1, turn.Swap()));                
+                best = Math.Max(best, Minimax(b, depth + 1, turn.Swap(), alpha, beta));   
+                if(best > alpha)
+                {
+                    alpha = best;
+                }             
+                if(best >= beta)
+                {
+
+                    break;
+                }
             }
 
             
@@ -386,6 +409,8 @@ class Board : IDeepCloneable<Board>
             }
         }
 
-        return false;
+        foreach(int c in this.ColumnCounter) if(c != 6) return false;
+
+        return true;
     }
 }
