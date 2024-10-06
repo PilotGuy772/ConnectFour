@@ -1,34 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/media/laeth/SSDLinux/Documents/programs/ConnectFour/ConnectFour.csproj": {}
+    "/var/home/laeth/RiderProjects/ConnectFour/ConnectFour.csproj": {}
   },
   "projects": {
-    "/media/laeth/SSDLinux/Documents/programs/ConnectFour/ConnectFour.csproj": {
+    "/var/home/laeth/RiderProjects/ConnectFour/ConnectFour.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/media/laeth/SSDLinux/Documents/programs/ConnectFour/ConnectFour.csproj",
+        "projectUniqueName": "/var/home/laeth/RiderProjects/ConnectFour/ConnectFour.csproj",
         "projectName": "ConnectFour",
-        "projectPath": "/media/laeth/SSDLinux/Documents/programs/ConnectFour/ConnectFour.csproj",
-        "packagesPath": "/home/laeth/.nuget/packages/",
-        "outputPath": "/media/laeth/SSDLinux/Documents/programs/ConnectFour/obj/",
+        "projectPath": "/var/home/laeth/RiderProjects/ConnectFour/ConnectFour.csproj",
+        "packagesPath": "/var/home/laeth/.nuget/packages/",
+        "outputPath": "/var/home/laeth/RiderProjects/ConnectFour/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "/home/laeth/.local/share/godot/mono/GodotNuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "/home/laeth/.nuget/NuGet/NuGet.Config",
-          "/home/laeth/.nuget/NuGet/config/Godot.Offline.Config"
+          "/var/home/laeth/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net8.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -36,11 +32,24 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.7, )",
+              "autoReferenced": true
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -55,11 +64,11 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Runtime.linux-x64",
-              "version": "[7.0.4, 7.0.4]"
+              "version": "[8.0.7, 8.0.7]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.linux-x64",
-              "version": "[7.0.4, 7.0.4]"
+              "version": "[8.0.7, 8.0.7]"
             }
           ],
           "frameworkReferences": {
@@ -67,7 +76,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.202/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/var/home/laeth/.dotnet/sdk/8.0.303/PortableRuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {

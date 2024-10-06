@@ -242,7 +242,7 @@ old version of Board.EvaluateScore()
         }
 
         int sum = returnedScores.Sum() + score;
-        return (int)Math.Round((decimal)(sum / (returnedScores.Count + 1)));
+        return (int)Math.Round((float)(sum / (returnedScores.Count + 1)));
 
     }
 

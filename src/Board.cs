@@ -1,5 +1,4 @@
-using System.Linq;
-
+using System.Runtime.CompilerServices;
 
 class Board : IDeepCloneable<Board>
 {
@@ -10,7 +9,8 @@ class Board : IDeepCloneable<Board>
 
         public Cell(int x, int y)
         {
-            List<Directions> add = new List<Directions>() { // list of all directions 
+            List<Directions> add = new List<Directions>
+            { // list of all directions 
                 Directions.North,
                 Directions.East,
                 Directions.South,
@@ -59,15 +59,9 @@ class Board : IDeepCloneable<Board>
     public Cell[,] Grid { get; set; }
     public int[] ColumnCounter { get; set; }
 
-    public Board(Cell[,] grid, int[] columnCounter)
-    {
-        Grid = grid;
-        ColumnCounter = columnCounter;
-    }
-
     public Board()
     {
-        ColumnCounter = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
+        ColumnCounter = [0, 0, 0, 0, 0, 0, 0];
 
         Grid = new Cell[7, 6];
         for (int x = 0; x < 7; x++)
@@ -111,24 +105,17 @@ class Board : IDeepCloneable<Board>
         }
     }
 
-    private static decimal CurveScore(decimal input)
-    {
-        decimal varyubul = (decimal)( Math.Atan((double)(input / 100)) * (20 * Math.PI) ); //arctan function with an asymptote at y = 100
-        //Console.WriteLine("Evaluated with a score of " + varyubul);
-        return varyubul;
-    }
+    private static float CurveScore(float input) => 
+        (float)( Math.Atan((double)(input / 100)) * (20 * Math.PI) ); //arctan function with an asymptote at y = 100
+    
 
-    public decimal EvaluateScore() //given a board, evaluate its score
+    public float EvaluateScore() //given a board, evaluate its score
     {
-        List<ScoreCriteria> log = new List<ScoreCriteria>();
         (int x, int y) next;
         Team color;
+        float rawScore = (float)ColumnCounter.Where(count => count == 6).Aggregate(0.0m, (current, i) => current + (int)ScoreCriteria.ImpossibleMove);
 
-        foreach(int i in this.ColumnCounter.Where(count => count == 6)) //go through each full column
-        {
-            log.Add(ScoreCriteria.ImpossibleMove); //and deduct points
-        }
-        
+
         for(int x = 0; x < 7; x++)
         {
             for(int y = 0; y < 6; y++)
@@ -137,54 +124,54 @@ class Board : IDeepCloneable<Board>
                 //iterating through each cell
 
                 //checks
-                if(this.Grid[x, y].Color == Team.None)//if empty
+                if(Grid[x, y].Color == Team.None)//if empty
                 {
                     continue;//skip
                 }
 
-                color = this.Grid[x, y].Color;
+                color = Grid[x, y].Color;
 
-                foreach(Directions dir in this.Grid[x, y].Affects)
+                foreach(Directions dir in Grid[x, y].Affects)
                 {
                     next = AdvanceInDirection(dir, (x, y));
-                    if(this.Grid[next.x, next.y].Color != color) //if this isn't at least a two-in-a-row
+                    if(Grid[next.x, next.y].Color != color) //if this isn't at least a two-in-a-row
                     {
                         continue; //skip it
                     }
 
                     next = AdvanceInDirection(dir, next);
-                    if(this.Grid[next.x, next.y].Color == Team.None)
+                    if(Grid[next.x, next.y].Color == Team.None)
                     { //blockade
 
-                        if(color == Team.Yellow) log.Add(ScoreCriteria.OpponentBlockade); //add the appropriate item
-                        if(color == Team.Red) log.Add(ScoreCriteria.Blockade);
+                        if(color == Team.Yellow) rawScore += (int)ScoreCriteria.OpponentBlockade; //add the appropriate item
+                        if(color == Team.Red) rawScore += (int)ScoreCriteria.Blockade;
 
-                    }else if(this.Grid[next.x, next.y].Color == color)//three in a row
+                    }else if(Grid[next.x, next.y].Color == color)//three in a row
                     { 
                         next = AdvanceInDirection(dir, next);
 
-                        if(this.Grid[next.x, next.y].Color == Team.None) //threat
+                        if(Grid[next.x, next.y].Color == Team.None) //threat
                         {
-                            if(next.y == 0 || this.Grid[next.x, next.y - 1].Color != Team.None) //if there is a populated cell below, it's an attack
+                            if(next.y == 0 || Grid[next.x, next.y - 1].Color != Team.None) //if there is a populated cell below, it's an attack
                             {
 
-                                if(color == Team.Yellow) log.Add(ScoreCriteria.OpponentAttack); //add the appropriate item
-                                if(color == Team.Red) log.Add(ScoreCriteria.Attack);
+                                if(color == Team.Yellow) rawScore += (int)ScoreCriteria.OpponentAttack; //add the appropriate item
+                                if(color == Team.Red) rawScore += (int)ScoreCriteria.Attack;
 
                             }else //otherwise it's just a regular threat
                             {
 
-                                if(color == Team.Yellow) log.Add(ScoreCriteria.OpponentThreat); //add the appropriate item
-                                if(color == Team.Red) log.Add(ScoreCriteria.Threat);
+                                if(color == Team.Yellow) rawScore += (int)ScoreCriteria.OpponentThreat; //add the appropriate item
+                                if(color == Team.Red) rawScore += (int)ScoreCriteria.Threat;
 
                             }
                             
 
-                        }else if(this.Grid[next.x, next.y].Color == color) //four-in-a-row
+                        }else if(Grid[next.x, next.y].Color == color) //four-in-a-row
                         {
 
-                            if(color == Team.Yellow) return -100.0m; //return the appropriate score
-                            if(color == Team.Red) return 100.0m;
+                            if(color == Team.Yellow) return -100.0f; //return the appropriate score
+                            if(color == Team.Red) return 100.0f;
 
                         }
                     }
@@ -193,62 +180,58 @@ class Board : IDeepCloneable<Board>
             }
         }//for loop
 
-        //generate raw score
-
-        decimal rawScore = 0.0m;
-        foreach(ScoreCriteria s in log)
-        {
-            rawScore += (decimal)( (int)s );
-        }
-
+        //generate score
         return CurveScore(rawScore);
 
     }
 
-    public static decimal Minimax(Board board, int depth, Team turn, decimal alpha, decimal beta)
+    public static float Minimax(Board board, int depth, Team turn, float alpha, float beta)
     {
         //Console.WriteLine("\nStarted new search as player " + turn);
         //Console.WriteLine("Current board state:");
         //board.OutputBoard();
         
-        if(depth == MAX_SEARCH_DEPTH || board.CheckVictory())
+        if(depth == MAX_SEARCH_DEPTH)
         {
             return board.EvaluateScore();
         }
-        
-        
-        List<int> noMove = new List<int>();
-        for(int i = 0; i < 7; i++) //check for full columns and add them to a list
+
+        Team? victory = board.CheckVictory();
+        // check for not null
+        // if victory is null, the board is not in a game over state
+        if(victory is { } winner)
         {
-            if(board.ColumnCounter[i] == 6)
+            switch (winner)
             {
-                noMove.Add(i);
+                case Team.Yellow:
+                    return -100.0f;
+                case Team.Red:
+                    return 100.0f;
+                case Team.None:
+                    return 0.0f;
             }
         }
 
         Board[] moves = new Board[7];
-        for(int i = 0; i < 7; i++)
+               
+        for (int i = 0; i < 7; i++)
         {
-            if(noMove.Contains(i)) //remove illegal moves from the queue
-            {
-                continue;
-            }
+            if (board.ColumnCounter[i] == 6) continue;
+            moves[i] = board.DeepClone();
 
-            moves[i] = board.DeepClone(); //clone the board
-
-            moves[i].Grid[i, moves[i].ColumnCounter[i]].Color = turn; //make the move on the new board
+            moves[i].Grid[i, moves[i].ColumnCounter[i]].Color = turn;
             moves[i].ColumnCounter[i]++;
         }
 
 
-        decimal best;
+        float best;
 
         if(turn == Team.Yellow) //MIN side
         {
             best = 101;
 
             
-            foreach(Board b in moves.Where(board => board != null))
+            foreach(Board b in moves.Where(b => b is not null))
             {
                 best = Math.Min(best, Minimax(b, depth + 1, turn.Swap(), alpha, beta));
                 if(best < beta)
@@ -269,7 +252,7 @@ class Board : IDeepCloneable<Board>
             best = -101;
 
 
-            foreach(Board b in moves.Where(board => board != null))
+            foreach(Board b in moves.Where(b => b is not null))
             {
                 best = Math.Max(best, Minimax(b, depth + 1, turn.Swap(), alpha, beta));   
                 if(best > alpha)
@@ -297,10 +280,7 @@ class Board : IDeepCloneable<Board>
         {
             for(int y = 0; y < 6; y++)
             {
-                newGrid[x, y] = new Cell() {
-                    Affects = this.Grid[x, y].Affects,
-                    Color = (Team)((int)this.Grid[x, y].Color)
-                };
+                newGrid[x,y] = Grid[x, y];
             }
         }
 
@@ -308,10 +288,11 @@ class Board : IDeepCloneable<Board>
 
         for(int x = 0; x < 7; x++)
         {
-            newCol[x] = this.ColumnCounter[x];
+            newCol[x] = ColumnCounter[x];
         }
 
-        return new Board(){
+        return new Board
+        {
             Grid = newGrid,
             ColumnCounter = newCol
         };
@@ -334,7 +315,7 @@ class Board : IDeepCloneable<Board>
             {
                 ConsoleColor color;
                 bool pop;
-                switch (this.Grid[x, y].Color)
+                switch (Grid[x, y].Color)
                 {
                     case Team.Red:
                         color = ConsoleColor.Red;
@@ -370,31 +351,32 @@ class Board : IDeepCloneable<Board>
         Console.Write(BOTTOM + "\n");
     }
 
-    public bool CheckVictory() //check if either team has won yet
+    public Team? CheckVictory() //check if either team has won yet
     {
         for (int y = 0; y < 6; y++)
         {
             for (int x = 0; x < 7; x++) //iterate through every cell
             {
-                if (this.Grid[x, y].Color == Team.None)
+                if (Grid[x, y].Color == Team.None)
                 {
                     continue;
                 }
 
-                foreach (Directions dir in this.Grid[x, y].Affects) //look in every direction that may lead to a connect-four from that cell
+                foreach (Directions dir in Grid[x, y].Affects) //look in every direction that may lead to a connect-four from that cell
                 {
                     (int x, int y) newPos = AdvanceInDirection(dir, (x, y)); //find the cell next to it in that direction
-                    Team color = this.Grid[x, y].Color;
+                    Team color = Grid[x, y].Color;
                     int counter = 1;
+                    
 
                     while (true)
                     {
                         if (counter == 4) //if we have four in a row, it's a win
                         {
-                            return true;
+                            return color;
                         }
 
-                        if (this.Grid[newPos.x, newPos.y].Color == color) //check if the new cell is the same color as the previous one
+                        if (Grid[newPos.x, newPos.y].Color == color) //check if the new cell is the same color as the previous one
                         {
                             newPos = AdvanceInDirection(dir, (newPos.x, newPos.y)); //continue to the next cell in the same direction
                             counter++;
@@ -409,8 +391,10 @@ class Board : IDeepCloneable<Board>
             }
         }
 
-        foreach(int c in this.ColumnCounter) if(c != 6) return false;
+        // nobody has won yet
+        foreach(int c in ColumnCounter) if(c != 6) return null;
 
-        return true;
+        // it's a draw, everybody loses
+        return Team.None;
     }
 }

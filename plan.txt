@@ -116,9 +116,9 @@ When scoring for a minimax algorithm, it is essential that a victory state count
 
 The multiplier will start at one. As the percentage of progress towards either extreme increases, the multiplier will decrease by an equivalent amount. In pseudocode:
 
-decimal multiplier;
-decimal score;
-decimal percent;
+float multiplier;
+float score;
+float percent;
 if (score >= 0)
 {
   percent = score / 10;

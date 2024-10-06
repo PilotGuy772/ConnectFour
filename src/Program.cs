@@ -306,7 +306,7 @@ class Program
                     continue;                
             }
 
-            if(board.CheckVictory())
+            if(board.CheckVictory() is not null)
             {
                 board.OutputBoard();
                 break;
@@ -329,7 +329,7 @@ class Program
         {
             if(CLEARSCREEN) Console.Clear();
             board.OutputBoard();
-            if(board.CheckVictory())
+            if(board.CheckVictory() is not null)
             {
                 return;
             }
@@ -427,13 +427,13 @@ class Program
             List<int> noMove = new List<int>();
             for(int i = 0; i < 7; i++) if(board.ColumnCounter[i] == 6) noMove.Add(i); //add full columns to the noMove list
 
-            decimal[] scores = new decimal[7]; //track scores
+            float[] scores = new float[7]; //track scores
             Board dupe;
             for(int i = 0; i < 7; i++)
             {
                 if(noMove.Contains(i)) //if this is an illegal move, give it a super low score so that it is not chosen
                 {
-                    scores[i] = -101.0m;
+                    scores[i] = -101.0f;
                     if(VERBOSE) Console.WriteLine("Skipped evaluation of column {0}", i);
                     continue;
                 }
@@ -446,7 +446,7 @@ class Program
                 if(VERBOSE) Console.WriteLine("Complete! Returned with score {0}", scores[i]);
             }
 
-            decimal highscore = -102;
+            float highscore = -102;
             int highscoreIndex = -1; //find the index and value of the highest returned score
             for(int i = 0; i < 7; i++)
             {
@@ -476,7 +476,7 @@ class Program
         {
             if(CLEARSCREEN) Console.Clear();            
             board.OutputBoard();
-            if(board.CheckVictory())
+            if(board.CheckVictory() is not null)
             {
                 return;
             }
@@ -490,13 +490,13 @@ class Program
             List<int> noMove = new List<int>();
             for(int i = 0; i < 7; i++) if(board.ColumnCounter[i] == 6) noMove.Add(i); //add full columns to the noMove list
 
-            decimal[] scores = new decimal[7]; //track scores
+            float[] scores = new float[7]; //track scores
             Board dupe;
             for(int i = 0; i < 7; i++)
             {
                 if(noMove.Contains(i)) //if this is an illegal move, give it a super low score so that it is not chosen
                 {
-                    scores[i] = -101.0m;
+                    scores[i] = -101.0f;
                     if(VERBOSE) Console.WriteLine("Skipped evaluation of column {0}", i);
                     continue;
                 }
@@ -509,7 +509,7 @@ class Program
                 if(VERBOSE) Console.WriteLine("Complete! Returned with score {0}", scores[i]);
             }
 
-            decimal highscore = -102;
+            float highscore = -102;
             int highscoreIndex = -1; //find the index and value of the highest returned score
             for(int i = 0; i < 7; i++)
             {
